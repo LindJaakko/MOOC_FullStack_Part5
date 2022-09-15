@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -9,6 +10,8 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [errorType, setErrorType] = useState('')
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -37,30 +40,37 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      /*
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('wrong username or password')
+      setErrorType('error')
       setTimeout(() => {
         setErrorMessage(null)
-      }, 5000)
-      */
+        setErrorType('')
+      }, 3000)
     }
   }
 
   const addBlog = (event) => {
     event.preventDefault()
-    console.log(newBlog)
 
     const blogObject = {
       title: newBlog.title,
       author: newBlog.author,
       url: newBlog.url,
     }
-    console.log(blogObject)
+
     blogService.create(blogObject).then((returnedBlog) => {
-      console.log(returnedBlog)
       setBlogs(blogs.concat(returnedBlog))
       setNewBlog({ title: '', author: '', url: '' })
     })
+
+    setErrorMessage(
+      `a new blog ${blogObject.title} by ${blogObject.author} added`
+    )
+    setErrorType('notification')
+    setTimeout(() => {
+      setErrorMessage(null)
+      setErrorType('')
+    }, 3000)
   }
 
   const handleBlogChange = (event) => {
@@ -97,12 +107,6 @@ const App = () => {
   )
 
   const blogForm = () => (
-    /*
-    <form onSubmit={addBlog}>
-      <input value={newBlog} onChange={handleBlogChange} />
-      <button type='submit'>create</button>
-    </form>
-    */
     <form onSubmit={addBlog}>
       <div>
         title:
@@ -145,11 +149,13 @@ const App = () => {
       {user === null ? (
         <div>
           <h2>log in to application</h2>
+          <Notification message={errorMessage} type={errorType} />
           {loginForm()}
         </div>
       ) : (
         <div>
           <h2>blogs</h2>
+          <Notification message={errorMessage} type={errorType} />
           <p>
             {user.name} logged in <button onClick={logOut}>logout</button>
           </p>
