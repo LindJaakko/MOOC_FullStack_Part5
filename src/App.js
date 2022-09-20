@@ -97,6 +97,17 @@ const App = () => {
     setUser(null)
   }
 
+  const onLike = async (blog) => {
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }
+    const { id } = blog
+    try {
+      const returnedBlog = await blogService.update(blog.id, updatedBlog)
+      setBlogs((currentBlogs) =>
+        currentBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
+      )
+    } catch {}
+  }
+
   const blogFormRef = useRef()
 
   return (
@@ -117,9 +128,11 @@ const App = () => {
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          {[...blogs]
+            .sort((a, b) => a.likes > b.likes)
+            .map((blog) => (
+              <Blog key={blog.id} blog={blog} onLike={() => onLike(blog)} />
+            ))}
         </div>
       )}
     </div>
