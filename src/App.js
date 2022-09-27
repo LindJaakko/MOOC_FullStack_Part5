@@ -108,6 +108,15 @@ const App = () => {
     } catch {}
   }
 
+  const onRemove = async (blog) => {
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+        await blogService.remove(blog.id)
+        window.location.reload()
+      }
+    } catch {}
+  }
+
   const blogFormRef = useRef()
 
   return (
@@ -131,7 +140,13 @@ const App = () => {
           {[...blogs]
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
-              <Blog key={blog.id} blog={blog} onLike={() => onLike(blog)} />
+              <Blog
+                key={blog.id}
+                blog={blog}
+                username={user.username}
+                onLike={() => onLike(blog)}
+                onRemove={() => onRemove(blog)}
+              />
             ))}
         </div>
       )}
