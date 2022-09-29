@@ -105,7 +105,9 @@ const App = () => {
       setBlogs((currentBlogs) =>
         currentBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
       )
-    } catch {}
+    } catch {
+      console.log('error')
+    }
   }
 
   const onRemove = async (blog) => {
@@ -114,7 +116,9 @@ const App = () => {
         await blogService.remove(blog.id)
         window.location.reload()
       }
-    } catch {}
+    } catch {
+      console.log('error')
+    }
   }
 
   const blogFormRef = useRef()
