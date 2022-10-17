@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
@@ -68,30 +69,6 @@ const App = () => {
     }, 3000)
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type='text'
-          value={username}
-          name='Username'
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type='submit'>login</button>
-    </form>
-  )
-
   const logOut = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
@@ -129,7 +106,13 @@ const App = () => {
         <div>
           <h2>log in to application</h2>
           <Notification message={errorMessage} type={errorType} />
-          {loginForm()}
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
         </div>
       ) : (
         <div>
