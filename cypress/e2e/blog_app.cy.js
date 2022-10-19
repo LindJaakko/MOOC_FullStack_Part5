@@ -53,4 +53,20 @@ describe('Blog app', function () {
       cy.contains('Test title Test Author')
     })
   })
+
+  describe('and some blogs exists', function () {
+    beforeEach(function () {
+      cy.login({ username: 'TestUser', password: 'TestPassword' })
+      cy.createBlog({ title: 'Blog1', author: 'Author1', url: 'www.1.fi' })
+      cy.createBlog({ title: 'Blog2', author: 'Author2', url: 'www.2.fi' })
+      cy.createBlog({ title: 'Blog3', author: 'Author3', url: 'www.3.fi' })
+    })
+
+    it('user can like a blog', function () {
+      cy.contains('Blog2').parent().as('theBlog')
+      cy.get('@theBlog').contains('view').click()
+      cy.get('@theBlog').contains('like').click()
+      cy.get('@theBlog').should('contain', '1')
+    })
+  })
 })
