@@ -38,7 +38,9 @@ const Blog = ({ blog, username, onLike, onRemove }) => {
         <br></br>
         {blog?.user?.name}
         <div style={showWhenSameUser}>
-          <button onClick={onRemove}>remove</button>
+          <button name='remove' onClick={onRemove}>
+            remove
+          </button>
           <br></br>
         </div>
       </div>

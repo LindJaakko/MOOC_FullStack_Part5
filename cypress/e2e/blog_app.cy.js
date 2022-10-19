@@ -1,12 +1,18 @@
 describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    const user = {
+    const user1 = {
       name: 'Test User',
       username: 'TestUser',
       password: 'TestPassword',
     }
-    cy.request('POST', 'http://localhost:3003/api/users/', user)
+    const user2 = {
+      name: 'Test User2',
+      username: 'TestUser2',
+      password: 'TestPassword2',
+    }
+    cy.request('POST', 'http://localhost:3003/api/users/', user1)
+    cy.request('POST', 'http://localhost:3003/api/users/', user2)
     cy.visit('http://localhost:3000')
   })
 
@@ -67,6 +73,34 @@ describe('Blog app', function () {
       cy.get('@theBlog').contains('view').click()
       cy.get('@theBlog').contains('like').click()
       cy.get('@theBlog').should('contain', '1')
+    })
+  })
+
+  describe('blogs can be removed', function () {
+    beforeEach(function () {
+      cy.login({ username: 'TestUser', password: 'TestPassword' })
+      cy.createBlog({ title: 'Blog1', author: 'Author1', url: 'www.1.fi' })
+      cy.createBlog({ title: 'Blog2', author: 'Author2', url: 'www.2.fi' })
+      cy.createBlog({ title: 'Blog3', author: 'Author3', url: 'www.3.fi' })
+    })
+
+    it('user can remove a blog', function () {
+      cy.contains('Blog2').parent().as('theBlog')
+      cy.get('@theBlog').contains('view').click()
+      cy.get('@theBlog').contains('remove').click()
+      cy.wait(500)
+      cy.get('html').should('not.contain', 'Blog2')
+    })
+
+    it('user cannot remove a blog of another user', function () {
+      cy.contains('logout').click()
+      cy.login({ username: 'TestUser2', password: 'TestPassword2' })
+      cy.contains('Blog2').parent().as('theBlog')
+      cy.get('@theBlog').contains('view').click()
+      cy.get('@theBlog')
+        .find('button')
+        .contains('remove')
+        .should('not.be.visible')
     })
   })
 })
