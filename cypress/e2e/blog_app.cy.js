@@ -103,4 +103,27 @@ describe('Blog app', function () {
         .should('not.be.visible')
     })
   })
+
+  describe('blogs are ordered by number of likes', function () {
+    beforeEach(function () {
+      cy.login({ username: 'TestUser', password: 'TestPassword' })
+      cy.createBlog({ title: 'Blog1', author: 'Author1', url: 'www.1.fi' })
+      cy.createBlog({ title: 'Blog2', author: 'Author2', url: 'www.2.fi' })
+      cy.createBlog({ title: 'Blog3', author: 'Author3', url: 'www.3.fi' })
+    })
+
+    it('blogs are in correct order', function () {
+      cy.contains('Blog2').parent().as('theBlog2')
+      cy.get('@theBlog2').contains('view').click()
+      cy.get('@theBlog2').contains('like').click()
+
+      cy.contains('Blog3').parent().as('theBlog3')
+      cy.get('@theBlog3').contains('view').click()
+      cy.get('@theBlog3').contains('like').click()
+      cy.get('@theBlog3').contains('like').click()
+      cy.get('.blog').eq(0).should('contain', 'Blog2')
+      cy.get('.blog').eq(1).should('contain', 'Blog3')
+      cy.get('.blog').eq(2).should('contain', 'Blog1')
+    })
+  })
 })
